@@ -1,180 +1,256 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Calculadora de Huella de Carbono</title>
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body {
-            padding: 2rem;
-            background-color: #f8f9fa;
-        }
-        .card {
-            border-radius: 1rem;
-        }
+      body {
+        padding: 2rem;
+        background-color: #f8f9fa;
+      }
+      .card {
+        border-radius: 1rem;
+      }
+      footer {
+    background: black;
+    padding: 20px 0;
+    color: white;
+    margin-top: 40px;
+    text-align: center;
+}
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <h1 class="text-center mb-4">Calculadora de Huella de Carbono</h1>
-        <div class="card shadow p-4">
-            <form id="carbonForm">
-                <div class="mb-3">
-                    <label for="transport" class="form-label">Tipo de transporte</label>
-                    <select class="form-select" id="transport" required>
-                        <option value="">Seleccionar...</option>
-                        <option value="avion">Avión</option>
-                        <option value="auto">Auto</option>
-                        <option value="tren">Tren</option>
-                        <option value="bus">Autobús</option>
-                        <option value="moto">Moto</option>
-                        <option value="bicicleta">Bicicleta</option>
-                        <option value="caminando">Caminando</option>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="origin" class="form-label">Origen</label>
-                    <input type="text" class="form-control" id="origin" placeholder="Ingrese la ubicación de origen" required>
-                </div>
-                <div class="mb-3">
-                    <label for="destination" class="form-label">Destino</label>
-                    <input type="text" class="form-control" id="destination" placeholder="Ingrese la ubicación de destino" required>
-                </div>
-                <div class="mb-3">
-                    <label for="passengers" class="form-label">Cantidad de pasajeros (opcional)</label>
-                    <input type="number" class="form-control" id="passengers" placeholder="Por defecto: 1">
-                </div>
-                <button type="submit" class="btn btn-primary w-100">Calcular</button>
-            </form>
-        </div>
+      <h1 class="text-center mb-4">Calculadora de Huella de Carbono</h1>
+      <div class="card shadow p-4">
+        <form id="carbonForm">
+          <div class="mb-3">
+            <label for="transport" class="form-label">Tipo de transporte</label>
+            <select class="form-select" id="transport" required>
+              <option value="">Seleccionar...</option>
+              <option value="avion">Avión</option>
+              <option value="auto">Auto</option>
+              <option value="tren">Tren</option>
+              <option value="bus">Autobús</option>
+              <option value="moto">Moto</option>
+              <option value="bicicleta">Bicicleta</option>
+              <option value="caminando">Caminando</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="origin" class="form-label">Origen</label>
+            <input
+              type="text"
+              class="form-control"
+              id="origin"
+              placeholder="Ingrese la ubicación de origen"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="destination" class="form-label">Destino</label>
+            <input
+              type="text"
+              class="form-control"
+              id="destination"
+              placeholder="Ingrese la ubicación de destino"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="passengers" class="form-label"
+              >Cantidad de pasajeros (opcional)</label
+            >
+            <input
+              type="number"
+              class="form-control"
+              id="passengers"
+              placeholder="Por defecto: 1"
+            />
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Calcular</button>
+        </form>
+      </div>
 
-        <div class="card shadow p-4 mt-4" id="resultsCard" style="display: none;">
-            <h3>Resultados</h3>
-            <p id="resultText"></p>
-            <canvas id="resultChart"></canvas>
-        </div>
+      <div class="card shadow p-4 mt-4" id="resultsCard" style="display: none">
+        <h3>Resultados</h3>
+        <p id="resultText"></p>
+        <canvas id="resultChart"></canvas>
+      </div>
     </div>
-
+    <footer>
+      <!-- place footer here -->
+      <div class="container">
+        <p>&copy; 2025 Lucas Ignacio Dev</p>
+      </div>
+    </footer>
     <!-- JavaScript -->
     <script>
-        const factoresEmision = {
-            avion: 0.2, // kg CO₂/km por pasajero
-            auto: 0.12,
-            tren: 0.05,
-            bus: 0.06,
-            moto: 0.08,
-            bicicleta: 0, // Sin emisiones
-            caminando: 0 // Sin emisiones
-        };
+      const factoresEmision = {
+        avion: 0.2, // kg CO₂/km por pasajero
+        auto: 0.12,
+        tren: 0.05,
+        bus: 0.06,
+        moto: 0.08,
+        bicicleta: 0, // Sin emisiones
+        caminando: 0, // Sin emisiones
+      };
 
-        const apiKey = "5b3ce3597851110001cf6248b95c9e787be04b2b8f5cd6d6fb6887e3";
+      const apiKey = "5b3ce3597851110001cf6248b95c9e787be04b2b8f5cd6d6fb6887e3";
 
-        function getCoordinates(location, callback) {
-            fetch(`https://api.openrouteservice.org/geocode/search?api_key=${apiKey}&text=${encodeURIComponent(location)}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.features && data.features.length > 0) {
-                        const coordinates = data.features[0].geometry.coordinates;
-                        callback(coordinates);
-                    } else {
-                        alert("No se pudo encontrar la ubicación: " + location);
-                    }
-                })
-                .catch(error => {
-                    console.error("Error al obtener coordenadas:", error);
-                    alert("Error al obtener coordenadas. Verifique las ubicaciones e intente nuevamente.");
-                });
-        }
+      function getCoordinates(location, callback) {
+        fetch(
+          `https://api.openrouteservice.org/geocode/search?api_key=${apiKey}&text=${encodeURIComponent(
+            location
+          )}`
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.features && data.features.length > 0) {
+              const coordinates = data.features[0].geometry.coordinates;
+              callback(coordinates);
+            } else {
+              alert("No se pudo encontrar la ubicación: " + location);
+            }
+          })
+          .catch((error) => {
+            console.error("Error al obtener coordenadas:", error);
+            alert(
+              "Error al obtener coordenadas. Verifique las ubicaciones e intente nuevamente."
+            );
+          });
+      }
 
-        function calculateDistance(originCoords, destinationCoords, callback) {
-    fetch("https://api.openrouteservice.org/v2/matrix/driving-car", {
-        method: "POST",
-        headers: {
-            "Authorization": apiKey,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
+      function calculateDistance(originCoords, destinationCoords, callback) {
+        fetch("https://api.openrouteservice.org/v2/matrix/driving-car", {
+          method: "POST",
+          headers: {
+            Authorization: apiKey,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
             locations: [originCoords, destinationCoords],
-            metrics: ["distance"]
+            metrics: ["distance"],
+          }),
         })
-    })
-        .then((response) => {
+          .then((response) => {
             if (!response.ok) {
-                throw new Error("Error al calcular la distancia");
+              throw new Error("Error al calcular la distancia");
             }
             return response.json();
-        })
-        .then((data) => {
+          })
+          .then((data) => {
             if (data.distances && data.distances.length > 0) {
-                const distanceInMeters = data.distances[0][1];
-                callback(distanceInMeters / 1000); // Convertir a kilómetros
+              const distanceInMeters = data.distances[0][1];
+              callback(distanceInMeters / 1000); // Convertir a kilómetros
             } else {
-                alert("No se pudo calcular la distancia entre los puntos.");
+              alert("No se pudo calcular la distancia entre los puntos.");
             }
-        })
-        .catch((error) => {
+          })
+          .catch((error) => {
             console.error("Error al calcular la distancia:", error);
-            alert("Error al calcular la distancia. Por favor, verifica los datos ingresados.");
-        });
-}
+            alert(
+              "Error al calcular la distancia. Por favor, verifica los datos ingresados."
+            );
+          });
+      }
 
-        document.getElementById('carbonForm').addEventListener('submit', function (e) {
-            e.preventDefault();
+      document
+        .getElementById("carbonForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
 
-            const transport = document.getElementById('transport').value;
-            const origin = document.getElementById('origin').value;
-            const destination = document.getElementById('destination').value;
-            const passengers = parseInt(document.getElementById('passengers').value) || 1;
+          const transport = document.getElementById("transport").value;
+          const origin = document.getElementById("origin").value;
+          const destination = document.getElementById("destination").value;
+          const passengers =
+            parseInt(document.getElementById("passengers").value) || 1;
 
-            if (transport && origin && destination) {
-                getCoordinates(origin, function (originCoords) {
-                    getCoordinates(destination, function (destinationCoords) {
-                        calculateDistance(originCoords, destinationCoords, function (distance) {
-                            const factor = factoresEmision[transport];
-                            const huella = (distance * factor) / passengers;
+          if (transport && origin && destination) {
+            getCoordinates(origin, function (originCoords) {
+              getCoordinates(destination, function (destinationCoords) {
+                calculateDistance(
+                  originCoords,
+                  destinationCoords,
+                  function (distance) {
+                    const factor = factoresEmision[transport];
+                    const huella = (distance * factor) / passengers;
 
-                            // Mostrar resultados
-                            document.getElementById('resultsCard').style.display = 'block';
-                            document.getElementById('resultText').innerText = `Tu huella de carbono es de ${huella.toFixed(2)} kg de CO₂ para un trayecto de ${distance.toFixed(2)} km.`;
+                    // Mostrar resultados
+                    document.getElementById("resultsCard").style.display =
+                      "block";
+                    document.getElementById(
+                      "resultText"
+                    ).innerText = `Tu huella de carbono es de ${huella.toFixed(
+                      2
+                    )} kg de CO₂ para un trayecto de ${distance.toFixed(
+                      2
+                    )} km.`;
 
-                            // Mostrar gráfico
-                            const ctx = document.getElementById('resultChart').getContext('2d');
-                            new Chart(ctx, {
-                                type: 'bar',
-                                data: {
-                                    labels: ['Avión', 'Auto', 'Tren', 'Autobús', 'Moto', 'Bicicleta', 'Caminando'],
-                                    datasets: [{
-                                        label: 'Emisiones (kg CO₂ por km)',
-                                        data: [
-                                            factoresEmision.avion,
-                                            factoresEmision.auto,
-                                            factoresEmision.tren,
-                                            factoresEmision.bus,
-                                            factoresEmision.moto,
-                                            factoresEmision.bicicleta,
-                                            factoresEmision.caminando
-                                        ],
-                                        backgroundColor: ['#ff6384', '#36a2eb', '#4bc0c0', '#ffcd56', '#9966ff', '#c9cbcf', '#ff9f40']
-                                    }]
-                                },
-                                options: {
-                                    responsive: true,
-                                    plugins: {
-                                        legend: {
-                                            display: true
-                                        }
-                                    }
-                                }
-                            });
-                        });
+                    // Mostrar gráfico
+                    const ctx = document
+                      .getElementById("resultChart")
+                      .getContext("2d");
+                    new Chart(ctx, {
+                      type: "bar",
+                      data: {
+                        labels: [
+                          "Avión",
+                          "Auto",
+                          "Tren",
+                          "Autobús",
+                          "Moto",
+                          "Bicicleta",
+                          "Caminando",
+                        ],
+                        datasets: [
+                          {
+                            label: "Emisiones (kg CO₂ por km)",
+                            data: [
+                              factoresEmision.avion,
+                              factoresEmision.auto,
+                              factoresEmision.tren,
+                              factoresEmision.bus,
+                              factoresEmision.moto,
+                              factoresEmision.bicicleta,
+                              factoresEmision.caminando,
+                            ],
+                            backgroundColor: [
+                              "#ff6384",
+                              "#36a2eb",
+                              "#4bc0c0",
+                              "#ffcd56",
+                              "#9966ff",
+                              "#c9cbcf",
+                              "#ff9f40",
+                            ],
+                          },
+                        ],
+                      },
+                      options: {
+                        responsive: true,
+                        plugins: {
+                          legend: {
+                            display: true,
+                          },
+                        },
+                      },
                     });
-                });
-            }
+                  }
+                );
+              });
+            });
+          }
         });
     </script>
-</body>
+  </body>
 </html>
